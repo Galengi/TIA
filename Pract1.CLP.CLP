@@ -79,6 +79,15 @@
    )
 ) 
 
+(deftemplate modeloCarretera
+   (slot id_car (type SYMBOL))
+ (slot niv_agri (type INTEGER))
+ (slot max_tempe (type INTEGER))
+  (slot min_tempe (type INTEGER))
+  (slot prioridadRes (type FLOAT)(default nil))
+  (slot den_carro (type INTEGER))
+)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Initializing rule
@@ -213,7 +222,11 @@
  (bind ?den_car (read))
  (fuzzify densidad-trafico ?den_car 0) 
  
+ 
+ (assert (modeloCarretera (id_car ?id_carretera) (niv_agri ?niv_agr) (max_tempe ?max_temp) (min_tempe ?min_temp) (prioridadRes) (den_carro ?den_car)))
  ) 
+ 
+ 
  
  
  (defrule resultado
