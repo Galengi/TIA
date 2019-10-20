@@ -1,0 +1,189 @@
+(define (domain dominioAsfalto)
+    (:requirements
+        :durative-actions
+        :typing
+        :fluents
+    )
+    (:types
+        cuadrilla
+        cisterna_asfalto
+        pavimentadora
+        compactadora
+        tramo
+        - object
+    )
+    (:constants
+;        (tiempo-compactarTerreno)
+;        (tiempo-pavimentarTerreno)
+;        (tiempo-aplastarTerreno)
+;        (tiempo-a-pintarMarcasViarias)
+;        (tiempo-b-colocarVallasYQuitamiedos)
+;        (tiempo-c-colocarSenalesYPanelesLuminosos)
+        (25 - cisterna_asfalto)
+        (30 - pavimentadora)
+        (35 - compactadora)
+    )
+    (:predicates
+        (at ?x - (either cuadrilla cisterna_asfalto pavimentadora compactadora ) ?t - tramo)
+        (busy ?y - (either cuadrilla cisterna_asfalto pavimentadora compactadora tramo ) )
+        (has-route ?t1 ?t2 - tramo)
+        (estado-compactado ?t tramo)
+        (estado-pavimentado ?t tramo)
+        (estado-aplastado ?t tramo)
+        (estado-a-pintarMarcasViarias ?t tramo)
+        (estado-b-colocarVallasYQuitamiedos ?t tramo)
+        (estado-c-colocarSenalesYPanelesLuminosos ?t tramo)
+    )
+    (:functions
+        (distancia ?t1 - tramo ?t2 - tramo)
+        (tiempo-total)
+        (coste-total)
+    )
+
+    ; Actions   compactarTerreno   250
+                pavimentar  (cisterna y pavimentadora)   190
+                aplastar(aplica un determinado nivel de presion) (compactadora)  150
+    acciones de obra final:  (necesitan cada una, una cuadrilla)
+        a pintadoDeMarcasViarias  30
+        b colocacionDeVallasYQuitamiedos   120
+        c colocacionDeSenalesYPanelesLuminosos   70
+        orden posible:  APLASTADO PRIMERO   NO TODOS NECESITAN LA C
+            a-b-c
+            c-a-b
+            c-b-a
+        transporteDeMaquinariaPesada    (tramoOrigen tramoDestino)    tiempor = distancia*2
+        transporteDeCuadrilla           (tramoOrigen tramoDestino)    tiempo = distancia
+        tramo Ocupado si trabajando en el-> accion
+        si transportando no acciones
+    
+    ;Actions
+    (:durative-action compactarTerreno
+        :parameters (?tramoActual - tramo)
+        ;:duration (= ?duration (tiempo-compactarTerreno))
+        :duration (= ?duration (250))
+        :condition (and
+            (at start (not (busy ?tramoActual)))
+            (at start (not (estado-compactado ?tramoActual)))
+            (over all (busy ?tramoActual))
+        )
+        :effect (and
+            (at start (not (estado-compactado ?tramoActual))) ;no se si fa falta
+            (at end   (estado-compactado ?tramoActual))
+            (at end   (increase (tiempo-total) (?duration)))
+        )
+    )
+    (:durative-action pavimentar
+        :parameters (?tramoActual - tramo ?pavimentadoraActual - pavimentadora ?cisterna_asfaltoActual - cisterna_asfalto)
+        ;:duration (= ?duration (tiempo-pavimentarTerreno))
+        :duration (= ?duration (190))
+        :condition (and
+            (at start (not (busy ?tramoActual)))
+            ;(at start (not (busy ?pavimentadoraActual)))  SI HA FET MATCH ES PERQUE NO ES ESTA OCUPADA, NO?
+            ;(at start (not (busy ?cisterna_asfaltoActual)))
+            (at start (not (estado-pavimentado ?tramoActual)))
+            (over all (busy ?tramoActual))
+            (over all (busy ?pavimentadoraActual))
+            (over all (busy ?cisterna_asfaltoActual))
+        )
+        :effect (and
+            (at end   (estado-pavimentado ?tramoActual))
+            (at end   (increase (tiempo-total) (?duration)))
+            ;(at end   (increase (coste-total) (cisterna_asfalto)))
+            ;(at end   (increase (coste-total) (pavimentadora)))
+        )
+    )
+    (:durative-action aplastar
+        :parameters (?tramoActual - tramo ?compactadoraActual - compactadora)
+        ;:duration (= ?duration (tiempo-aplastarTerreno))
+        :duration (= ?duration (150))
+        :condition (and
+            (at start (not (busy ?tramoActual)))
+            ;(at start (not (busy ?compactadoraActual)))
+            (at start (not (estado-compactado ?tramoActual)))
+            (over all (busy ?tramoActual))
+            (over all (busy ?compactadoraActual))
+        )
+        :effect (and
+            (at end   (estado-compactado ?tramoActual))
+            (at end   (increase (tiempo-total) (?duration)))
+            ;(at end   (increase (coste-total) (compactadora)))
+        )
+    )
+    (:durative-action pintarMarcasViarias
+        :parameters (?tramoActual - tramo ?cuadrillaActual - cuadrilla)
+        ;:duration (= ?duration (tiempo-a-pintarMarcasViarias))
+        :duration (= ?duration (30))
+        :condition (and
+            (at start (not (busy ?tramoActual)))
+            ;(at start (not (busy ?compactadoraActual)))
+            (at start (not (estado-a-pintarMarcasViarias ?tramoActual)))
+            (over all (busy ?tramoActual))
+            (over all (busy ?cuadrillaActual))
+        )
+        :effect (and
+            (at end   (estado-a-pintarMarcasViarias ?tramoActual))
+            (at end   (increase (tiempo-total) (?duration)))
+            ;(at end   (increase (coste-total) (compactadora)))
+        )
+    )
+    (:durative-action colocarVallasYQuitamiedosstar
+        :parameters (?tramoActual - tramo ?cuadrillaActual - cuadrilla)
+        ;:duration (= ?duration (tiempo-b-colocarVallasYQuitamiedosstar))
+        :duration (= ?duration (120))
+        :condition (and
+            (at start (not (busy ?tramoActual)))
+            ;(at start (not (busy ?compactadoraActual)))
+            (at start (not ((estado-b-colocarVallasYQuitamiedos ?tramoActual)))
+            (over all (busy ?tramoActual))
+            (over all (busy ?cuadrillaActual))
+        )
+        :effect (and
+            (at end   (estado-b-colocarVallasYQuitamiedos ?tramoActual))
+            (at end   (increase (tiempo-total) (?duration)))
+            ;(at end   (increase (coste-total) (compactadora)))
+        )
+    )
+    (:durative-action colocarSenalesYPanelesLuminosos
+        :parameters (?tramoActual - tramo ?cuadrillaActual - cuadrilla)
+        ;:duration (= ?duration (tiempo-c-colocarSenalesYPanelesLuminosos))
+        :duration (= ?duration (70))
+        :condition (and
+            (at start (not (busy ?tramoActual)))
+            ;(at start (not (busy ?compactadoraActual)))
+            (at start (not (estado-c-colocarSenalesYPanelesLuminosos ?tramoActual)))
+            (over all (busy ?tramoActual))
+            (over all (busy ?cuadrillaActual))
+        )
+        :effect (and
+            (at end   (colocarSenalesYPanelesLuminosos ?tramoActual))
+            (at end   (increase (tiempo-total) (?duration)))
+            ;(at end   (increase (coste-total) (compactadora)))
+        )
+    )
+    (:durative-action transportarCuadrilla
+        :parameters (?tramoOrigen - tramo ?tramoDestino - tramo ?cuadrillaActual - cuadrilla)
+        :duration (= ?duration (distancia (?tramoOrigen ?tramoDestino)))
+        :condition (and
+            (at start (not (busy ?tramoActual)))
+            (over all (busy ?tramoActual))
+            (over all (busy ?cuadrillaActual))
+        )
+        :effect (and
+            (at end   (increase (tiempo-total) (?duration)))
+            ;(at end   (increase (coste-total) (compactadora)))
+        )
+    )
+    (:durative-action transportarMaquinaria
+        :parameters (?tramoOrigen - tramo ?tramoDestino - tramo ?compactadoraActual - compactadora)
+        :duration (= ?duration (* (distancia (?tramoOrigen ?tramoDestino)) 2))
+        :duration (= ?duration (150))
+        :condition (and
+            (at start (not (busy ?tramoActual)))
+            (over all (busy ?tramoActual))
+        )
+        :effect (and
+            (at end   (increase (tiempo-total) (?duration)))
+            ;(at end   (increase (coste-total) (compactadora)))
+        )
+    )
+)
