@@ -1,22 +1,3 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Global definitions used in the simulation
-;;
-
-
-;;(deftemplate carretera
-;;(slot agrietamiento (type SYMBOL))
-;;(slot temperatura (type INTEGER))
-;;(slot densidad-trafico (type INTEGER))
-;;(slot vive (type SYMBOL))
-;;) 
-
-
-
-
-
-
-
 
  (deffunction fuzzify (?fztemplate ?value ?delta)
 
@@ -81,28 +62,15 @@
 
 (deftemplate modeloCarretera
    (slot id_car (type SYMBOL))
- (slot niv_agri (type INTEGER))
- (slot max_tempe (type INTEGER))
-  (slot min_tempe (type INTEGER))
-  (slot prioridadRes (type FLOAT)(default nil))
-  (slot den_carro (type INTEGER))
+   (slot niv_agri (type INTEGER))
+   (slot max_tempe (type INTEGER))
+   (slot min_tempe (type INTEGER))
+   (slot den_carro (type INTEGER))
+   (slot prioridadRes (type FLOAT))
 )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Initializing rule
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;(defrule start
-;;   =>
-;;     (initShower) 
-;;    )
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Rules that control the shower with fuzzy inferencing
-;;
 
 (defrule fria_ligero
    (agrietamiento ligero)
@@ -200,46 +168,44 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defrule leerconsola ;lee de consola un valor difuso y lo aserta
- (initial-fact)
-=>
- (printout t "Introduzca el identificador de la carretera" crlf)
- (bind ?id_carretera (read))
- (assert-string (format nil "(Identificador %s)" ?id_carretera))
+   (initial-fact)
+   =>
+   (printout t "Introduzca el identificador de la carretera" crlf)
+   (bind ?id_carretera (read))
+   (assert-string (format nil "(Identificador %s)" ?id_carretera))
  
- (printout t "Introduzca el nivel de agrietamiento" crlf)
- (bind ?niv_agr (read))
- (fuzzify agrietamiento ?niv_agr 0) 
+   (printout t "Introduzca el nivel de agrietamiento" crlf)
+   (bind ?niv_agr (read))
  
- (printout t "Introduzca la maxima temperatura de la carretera" crlf)
- (bind ?max_temp (read))
- (fuzzify temperatura ?max_temp 0) 
+   (printout t "Introduzca la maxima temperatura de la carretera" crlf)
+   (bind ?max_temp (read))
  
- (printout t "Introduzca la minima temperatura de la carretera" crlf)
- (bind ?min_temp (read))
- (fuzzify temperatura ?min_temp 0)
+   (printout t "Introduzca la minima temperatura de la carretera" crlf)
+   (bind ?min_temp (read))
  
- (printout t "Introduzca la densidad de la carretera" crlf)
- (bind ?den_car (read))
- (fuzzify densidad-trafico ?den_car 0) 
+   (printout t "Introduzca la densidad de la carretera" crlf)
+   (bind ?den_car (read))
+
+   (assert (modeloCarretera (id_car ?id_carretera) (niv_agri ?niv_agr) (max_tempe ?max_temp) (min_tempe ?min_temp) (den_carro ?den_car)))
  
+   (fuzzify agrietamiento ?niv_agr 0) 
+   (fuzzify temperatura ?max_temp 0) 
+   (fuzzify temperatura ?min_temp 0)
+   (fuzzify densidad-trafico ?den_car 0) 
  
- (assert (modeloCarretera (id_car ?id_carretera) (niv_agri ?niv_agr) (max_tempe ?max_temp) (min_tempe ?min_temp) (prioridadRes) (den_carro ?den_car)))
  ) 
  
  
  
  
  (defrule resultado
- (declare (salience -1))
- (necesidad-reasfaltado ?x)
- =>
- (bind ?mom_def (moment-defuzzify ?x))
- (bind ?max_def (maximum-defuzzify ?x))
- (printout t "moment-defuzzify " ?mom_def crlf)
- (printout t "maximum-defuzzify " ?max_def crlf)
+   (declare (salience -1))
+      (necesidad-reasfaltado ?x)
+      (modeloCarretera (id_car ?id_carretera) (niv_agri ?niv_agr) (max_tempe ?max_temp) (min_tempe ?min_temp) (den_carro ?den_car) (prioridadRes ?prio))
+      =>
+      (bind ?mom_def (moment-defuzzify ?x))
+      (bind ?max_def (maximum-defuzzify ?x))
 
+      (printout t "moment-defuzzify " ?mom_def crlf)
+      (printout t "maximum-defuzzify " ?max_def crlf)
 )
-
-
-
-
