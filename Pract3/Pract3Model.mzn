@@ -37,5 +37,5 @@ constraint (abs(celda[5,1]-celda[4,2]) == 1) \/ abs(celda[5,1]-celda[8,2]) == 1)
 constraint forall(i,j in 1..9 where i > j) (celda[i,1]-celda[j,1] > 0);
 
 %j
-constraint forall (i in 1..7, j in 1..9 where i < j) (celda[i,1]-celda[j,1] > 0 /\ i < j /\ i < 7);
+constraint forall (i in 1..7, j in 1..9 where i < j) (celda[i,1]-celda[j,1] > 0 /\ i < 7);
 
