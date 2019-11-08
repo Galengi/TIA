@@ -9,10 +9,10 @@ include "alldifferent.mzn";
 constraint alldifferent (celda);
 
 
-% a
-constraint abs(celda[1,2] - celda[1,1]) != 1 /\ abs(celda[1,2] - celda[5,1]) != 1 /\ abs(celda[1,2] - celda[9,1]) != 1 /\ abs(celda[1,2] - celda[4,2]) != 1;
+%a
+constraint abs(celda[2,1] - celda[1,1]) != 1 /\ abs(celda[2,1] - celda[5,1]) != 1 /\ abs(celda[2,1] - celda[9,1]) != 1 /\ abs(celda[2,1] - celda[4,2]) != 1;
 
-% b
+%b
 constraint forall(i in 1..9) (abs(celda[3,1] - (celda[i,1])) != 1);
 
 %c
@@ -25,17 +25,27 @@ constraint abs(celda[8,1]-celda[8,2]) == 2;
 constraint abs(celda[5,1]-celda[5,2]) == 1;
 
 %f
-constraint abs(celda[4,1]-celda[1,1]) == 1) \/ abs(celda[4,1]-celda[9,1]) == 1) \/ (abs(celda[4,1]-celda[1,2]) == 1) \/ abs(celda[4,1]-celda[9,2]) == 1;
+constraint abs(celda[4,1]-celda[1,1]) == 1 \/ abs(celda[4,1]-celda[9,1]) == 1 \/ abs(celda[4,1]-celda[1,2]) == 1 \/ abs(celda[4,1]-celda[9,2]) == 1;
 
 %g
 constraint abs(celda[6,1] - celda[7,1]) != 1;
 
 %h
-constraint (abs(celda[5,1]-celda[4,2]) == 1) \/ abs(celda[5,1]-celda[8,2]) == 1) \/ (abs(celda[5,1]-celda[2,1]) == 1) \/ abs(celda[5,1]-celda[3,1]) == 1) \/ abs(celda[5,1]-celda[7,1]) == 1) /\ abs(celda[5,2]-celda[6,1]) != 1;
+constraint (abs(celda[5,1]-celda[4,2]) == 1 \/ abs(celda[5,1]-celda[8,2]) == 1 \/ abs(celda[5,1]-celda[2,1]) == 1 \/ abs(celda[5,1]-celda[3,1]) == 1 \/ abs(celda[5,1]-celda[7,1]) == 1) /\ (abs(celda[5,2]-celda[6,1]) != 1);
 
 %i
-constraint forall(i,j in 1..9 where i > j) (celda[j,1]-celda[i,1] > 0);
+constraint forall(i,j in 1..9 where i > j) (celda[i,1]-celda[j,1] > 0);
 
 %j
-constraint forall (i in 1..7, j in 1..9 where i < j) (celda[i,1]-celda[j,1] > 0 /\ i < 7);
+constraint forall (i in 1..6, j in 1..9 where i > j) (celda[j,2]-celda[i,2] > 0);
 
+solve satisfy;
+
+output [show(celda[i,1]) ++ " "
+   | i in 1..9];
+   
+output ["\n"];
+   
+output [show(celda[i,2]) ++ " "
+   | i in 1..9];
+   
