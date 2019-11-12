@@ -40,6 +40,9 @@ constraint forall(i,j in 1..9 where i > j) (celda[i,1]-celda[j,1] > 0);
 constraint forall (i in 1..6, j in 1..9 where i > j) (celda[j,2]-celda[i,2] > 0);
 
 solve satisfy;
+solve minimize abs(celda[8,1]-celda[9,1]) + abs(celda[1,2]-celda[2,2])
+solve minimize abs(celda[7,1]-celda[7,2]) - abs(celda[3,1]-celda[9,2])
+
 
 output [show(celda[i,1]) ++ " "
    | i in 1..9];
