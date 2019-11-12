@@ -13,7 +13,7 @@ constraint alldifferent (celda);
 constraint abs(celda[2,1] - celda[1,1]) != 1 /\ abs(celda[2,1] - celda[5,1]) != 1 /\ abs(celda[2,1] - celda[9,1]) != 1 /\ abs(celda[2,1] - celda[4,2]) != 1;
 
 %b
-constraint forall(i in 1..9) (abs(celda[3,1] - (celda[i,1])) != 1);
+constraint forall(i in 1..9) (abs(celda[7,1] - (celda[i,1])) != 1);
 
 %c
 constraint abs(celda[4,1]-celda[4,2]) >= 5;
