@@ -67,5 +67,34 @@ public class OpsJornadasDecoder implements Decoder<SelectGenotype<JornadasSymbol
   }
 }
 
+package cuadrillas.trabajadores;
 
+import java.util.ArrayList;
+import org.opt4j.core.Objectives;
+import org.opt4j.core.Objectives.Sign;
+import org.opt4j.core.problem.Evaluator;
+
+public class OpsJornadasEvaluator implements Evalutor<ArrayList<JornadasSymbol>>
+{
+  public Objectives evaluate (ArrayList<JornadasSymbol> phenotype)
+  {
+  	int coste = Datos.matrizCostes[0][0];
+  	int produ = Datos.matrizProductividad[0][0];
+    	for (int i = 0; i < phenotype.size(); i++)
+    	{
+		switch (phenotype.get(i))
+		{
+			case ONE: coste += Datos.matrizCostes[1][i]; break;
+				produ += Datos.matrizProductividad[1][i]; break;
+			case TWO: coste += Datos.matrizCostes[2][i]; break;
+				produ += Datos.matrizProductividad[2][i]; break;
+			case THREE: coste += Datos.matrizCostes[3][i]; break;
+				produ += Datos.matrizProductividad[3][i]; break;
+		}
+	}
+   	 Objectives objectives = new Objectives();
+	 objectives.add("Valor objetivo-MAX", Sign.MAX, Math.abs(produ - coste));
+	 return objectives
+  }
+}
 
