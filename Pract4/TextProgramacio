@@ -53,7 +53,7 @@ import java.util.ArrayList;
 import org.opt4j.core.genotype.SelectGenotype;
 import org.opt4j.core.problem.Decoder;
 
-public class OpsJornadasDecoder implements Decoder<SelectGenotype<JornadasSymbol>, ArrayList<JornadasSymbol>> 
+public class JornadasDecoder implements Decoder<SelectGenotype<JornadasSymbol>, ArrayList<JornadasSymbol>> 
 {
   public ArrayList<JornadasSymbol> decode(SelectGenotype<JornadasSymbol> genotype)
   {
@@ -74,7 +74,7 @@ import org.opt4j.core.Objectives;
 import org.opt4j.core.Objectives.Sign;
 import org.opt4j.core.problem.Evaluator;
 
-public class OpsJornadasEvaluator implements Evalutor<ArrayList<JornadasSymbol>>
+public class JornadasEvaluator implements Evalutor<ArrayList<JornadasSymbol>>
 {
   public Objectives evaluate (ArrayList<JornadasSymbol> phenotype)
   {
@@ -97,4 +97,21 @@ public class OpsJornadasEvaluator implements Evalutor<ArrayList<JornadasSymbol>>
 	 return objectives
   }
 }
+
+
+
+package cuadrillas.trabajadores;
+
+import java.util.ArrayList;
+import org.opt4j.core.Objectives;
+import org.opt4j.core.Objectives.Sign;
+import org.opt4j.core.problem.Evaluator;
+
+public class JornadasEvaluator implements Evalutor<ArrayList<JornadasSymbol>>
+{
+  protected void config() {
+  	bindProblem(JornadasCreator.class, JornadasDecoder.class, JornadasEvaluator.class);
+  }
+}
+
 
